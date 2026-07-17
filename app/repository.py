@@ -17,3 +17,45 @@ def list_products() -> list[Product]:
 def get_product(product_id: int) -> Product | None:
     return next((product for product in PRODUCTS if product.id == product_id), None)
 
+
+def search_and_filter_products(
+    query: str | None = None,
+    sort_by: str | None = None,
+    order: str = "asc",
+    page: int = 1,
+    page_size: int = 20,
+) -> tuple[list[Product], int]:
+    """
+    Search, filter, sort, and paginate products.
+
+    Returns a tuple of (items, total) where total is the count before pagination.
+    """
+    products = PRODUCTS.copy()
+
+    # Filter by search query
+    if query:
+        query_lower = query.lower()
+        products = [
+            p
+            for p in products
+            if query_lower in p.name.lower() or query_lower in p.category.lower()
+        ]
+
+    # Count total before pagination
+    total = len(products)
+
+    # Sort
+    if sort_by:
+        reverse = order == "desc"
+        if sort_by == "name":
+            products.sort(key=lambda p: p.name, reverse=reverse)
+        elif sort_by == "price":
+            products.sort(key=lambda p: p.price, reverse=reverse)
+
+    # Paginate
+    start_idx = (page - 1) * page_size
+    end_idx = start_idx + page_size
+    paginated_products = products[start_idx:end_idx]
+
+    return paginated_products, total
+
