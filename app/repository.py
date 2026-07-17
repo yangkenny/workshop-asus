@@ -17,3 +17,35 @@ def list_products() -> list[Product]:
 def get_product(product_id: int) -> Product | None:
     return next((product for product in PRODUCTS if product.id == product_id), None)
 
+
+def search_products(
+    query: str | None = None,
+    sort_by: str | None = None,
+    order: str = "asc",
+) -> list[Product]:
+    """Search and sort products.
+    
+    Args:
+        query: Case-insensitive search query for name or category
+        sort_by: Field to sort by (e.g., "price")
+        order: Sort order ("asc" or "desc")
+    
+    Returns:
+        Filtered and sorted list of products
+    """
+    results = PRODUCTS.copy()
+    
+    # Apply search filter
+    if query:
+        query_lower = query.lower()
+        results = [
+            p for p in results
+            if query_lower in p.name.lower() or query_lower in p.category.lower()
+        ]
+    
+    # Apply sorting
+    if sort_by == "price":
+        results.sort(key=lambda p: p.price, reverse=(order == "desc"))
+    
+    return results
+
