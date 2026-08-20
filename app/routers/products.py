@@ -1,3 +1,5 @@
+from typing import Annotated
+
 from fastapi import APIRouter, HTTPException, Path, status
 
 from app.models import Product, ProductPage
@@ -18,7 +20,7 @@ def read_products() -> ProductPage:
 
 
 @router.get("/{product_id}")
-def read_product(product_id: int = Path(gt=0)) -> Product:
+def read_product(product_id: Annotated[int, Path(gt=0)]) -> Product:
     product = get_product(product_id)
     if product is None:
         raise HTTPException(
