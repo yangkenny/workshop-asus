@@ -1,4 +1,4 @@
-from fastapi import APIRouter, HTTPException, status
+from fastapi import APIRouter, HTTPException, Path, status
 
 from app.models import Product, ProductPage
 from app.repository import get_product, list_products
@@ -6,7 +6,7 @@ from app.repository import get_product, list_products
 router = APIRouter(prefix="/products", tags=["products"])
 
 
-@router.get("", response_model=ProductPage)
+@router.get("")
 def read_products() -> ProductPage:
     products = list_products()
     return ProductPage(
@@ -17,8 +17,8 @@ def read_products() -> ProductPage:
     )
 
 
-@router.get("/{product_id}", response_model=Product)
-def read_product(product_id: int) -> Product:
+@router.get("/{product_id}")
+def read_product(product_id: int = Path(gt=0)) -> Product:
     product = get_product(product_id)
     if product is None:
         raise HTTPException(

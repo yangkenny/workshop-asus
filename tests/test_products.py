@@ -31,3 +31,12 @@ def test_get_missing_product(client: TestClient) -> None:
 
     assert response.status_code == 404
     assert response.json() == {"detail": "Product not found"}
+
+
+def test_get_product_with_invalid_id(client: TestClient) -> None:
+    """Test that negative and zero product IDs are rejected."""
+    response_zero = client.get("/products/0")
+    assert response_zero.status_code == 422
+
+    response_negative = client.get("/products/-1")
+    assert response_negative.status_code == 422
