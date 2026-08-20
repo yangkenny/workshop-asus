@@ -11,7 +11,15 @@ IMPORT_LINE = "from app.routers import products, reports"
 ORIGINAL_IMPORT_LINE = "from app.routers import products"
 INCLUDE_LINE = "app.include_router(reports.router)"
 
-INSECURE_REPORTS = '''\
+LAB2_ALREADY_PREPARED_ERROR = (
+    "Lab 2 files already appear to be prepared. "
+    "Run `python scripts/prepare_lab2.py --reset` before preparing it again."
+)
+ORIGINAL_IMPORT_NOT_FOUND_ERROR = (
+    "Could not find the expected products router import in app/main.py."
+)
+
+INSECURE_REPORTS = """\
 import sqlite3
 import traceback
 
@@ -64,19 +72,16 @@ def sales_report(
         )
     finally:
         connection.close()
-'''
+"""
 
 
 def prepare() -> None:
     main_content = MAIN_PATH.read_text(encoding="utf-8")
     if REPORTS_PATH.exists() or IMPORT_LINE in main_content or INCLUDE_LINE in main_content:
-        raise SystemExit(
-            "Lab 2 files already appear to be prepared. "
-            "Run `python scripts/prepare_lab2.py --reset` before preparing it again."
-        )
+        raise SystemExit(LAB2_ALREADY_PREPARED_ERROR)
 
     if ORIGINAL_IMPORT_LINE not in main_content:
-        raise SystemExit("Could not find the expected products router import in app/main.py.")
+        raise SystemExit(ORIGINAL_IMPORT_NOT_FOUND_ERROR)
 
     REPORTS_PATH.write_text(INSECURE_REPORTS, encoding="utf-8")
     main_content = main_content.replace(ORIGINAL_IMPORT_LINE, IMPORT_LINE, 1)
